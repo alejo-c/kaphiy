@@ -14,9 +14,14 @@ import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import ModalScreen from '../screens/ModalScreen';
 import NotFoundScreen from '../screens/NotFoundScreen';
+import SigninScreen from '../screens/SigninScreen';
+import LoginScreen from '../screens/LoginScreen';
+import RegisterScreen from '../screens/RegisterScreen';
 import HomeScreen from '../screens/HomeScreen';
-import TabOneScreen from '../screens/TabOneScreen';
-import TabTwoScreen from '../screens/TabTwoScreen';
+import CultivationScreen from '../screens/CultivationScreen';
+import FinancesScreen from '../screens/FinancesScreen';
+import CalendarScreen from '../screens/CalendarScreen';
+import ProfileScreen from '../screens/ProfileScreen';
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 
@@ -38,9 +43,42 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
 	return (
-		<Stack.Navigator>
+		<Stack.Navigator
+			initialRouteName="Signin">
 			<Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
-			<Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
+			<Stack.Screen name="NotFound" component={NotFoundScreen} options={{
+				title: 'Oops!',
+				headerStyle: {
+					backgroundColor: '#4B5842',
+				},
+			}} />
+			<BottomTab.Screen
+				name="Signin"
+				component={SigninScreen}
+				options={{
+					title: 'Signin',
+					tabBarStyle: { display: 'none' },
+					headerShown: false,
+				}}
+			/>
+			<BottomTab.Screen
+				name="Login"
+				component={LoginScreen}
+				options={{
+					title: 'Login',
+					tabBarStyle: { display: 'none' },
+					headerShown: false,
+				}}
+			/>
+			<BottomTab.Screen
+				name="Register"
+				component={RegisterScreen}
+				options={{
+					title: 'Register',
+					tabBarStyle: { display: 'none' },
+					headerShown: false,
+				}}
+			/>
 			<Stack.Group screenOptions={{ presentation: 'modal' }}>
 				<Stack.Screen name="Modal" component={ModalScreen} />
 			</Stack.Group>
@@ -61,14 +99,28 @@ function BottomTabNavigator() {
 		<BottomTab.Navigator
 			initialRouteName="Home"
 			screenOptions={{
+				headerStyle: {
+					backgroundColor: '#4B5842',
+				},
 				tabBarActiveTintColor: Colors[colorScheme].tint,
-			}}>
+				tabBarStyle: {
+					height: 60,
+				},
+				tabBarLabelStyle: {
+					fontSize: 13,
+				},
+				tabBarActiveBackgroundColor: '#280907',
+				tabBarInactiveBackgroundColor: '#280907',
+			}}
+
+		>
+
 			<BottomTab.Screen
 				name="Home"
 				component={HomeScreen}
 				options={({ navigation }: RootTabScreenProps<'Home'>) => ({
-					title: 'Home',
-					tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+					title: 'Inicio',
+					tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
 					headerRight: () => (
 						<Pressable
 							onPress={() => navigation.navigate('Modal')}
@@ -86,33 +138,36 @@ function BottomTabNavigator() {
 				})}
 			/>
 			<BottomTab.Screen
-				name="TabOne"
-				component={TabOneScreen}
-				options={({ navigation }: RootTabScreenProps<'TabOne'>) => ({
-					title: 'Tab One',
-					tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-					headerRight: () => (
-						<Pressable
-							onPress={() => navigation.navigate('Modal')}
-							style={({ pressed }) => ({
-								opacity: pressed ? 0.5 : 1,
-							})}>
-							<FontAwesome
-								name="info-circle"
-								size={25}
-								color={Colors[colorScheme].text}
-								style={{ marginRight: 15 }}
-							/>
-						</Pressable>
-					),
-				})}
-			/>
-			<BottomTab.Screen
-				name="TabTwo"
-				component={TabTwoScreen}
+				name="Cultivation"
+				component={CultivationScreen}
 				options={{
-					title: 'Tab Two',
-					tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+					title: 'Cultivo',
+					tabBarIcon: ({ color }) => <TabBarIcon name="th" color={color} />,
+				}}
+			/>
+			<BottomTab.Screen
+				name="Finances"
+				component={FinancesScreen}
+				options={{
+					title: 'Finanzas',
+					tabBarIcon: ({ color }) => <TabBarIcon name="dollar" color={color} />,
+				}}
+			/>
+			<BottomTab.Screen
+				name="Calendar"
+				component={CalendarScreen}
+				options={{
+					title: 'Calendario Floral',
+					tabBarIcon: ({ color }) => <TabBarIcon name="calendar" color={color} />,
+				}}
+			/>
+			<BottomTab.Screen
+				name="Profile"
+				component={ProfileScreen}
+				options={{
+					title: 'Perfil',
+					tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
+					headerShown: false,
 				}}
 			/>
 		</BottomTab.Navigator>
