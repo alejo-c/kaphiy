@@ -1,15 +1,22 @@
-import { AccessibilityInfo, StyleSheet, Image } from 'react-native';
-// import { withSafeAreaInsets } from 'react-native-safe-area-context';
+import { getAuth, signOut } from 'firebase/auth';
+import { StyleSheet, Image } from 'react-native';
+import { Button } from 'react-native-elements';
 
-// import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
+import { useAuthentication } from '../hooks/useAuthentication';
 import { RootTabScreenProps } from '../types';
 
+const auth = getAuth();
+
 export default function HomeScreen({ navigation }: RootTabScreenProps<'Home'>) {
+	const { user } = useAuthentication();
+	if (!user) {
+		navigation.navigate('Signin');
+	}
 	return (
-		<View style={styles.container} accessibilityLiveRegion='polite'>
+		<View style={styles.container}>
 			<View>
-				<Text style={styles.title}>Bienvenido Usuario</Text>
+				<Text style={styles.title}>Bienvenido {user?.email}</Text>
 			</View>
 
 			{/* <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" /> */}
@@ -23,6 +30,7 @@ export default function HomeScreen({ navigation }: RootTabScreenProps<'Home'>) {
 
 				<View accessibilityRole='progressbar'></View>
 			</View>
+			<Button title="Sign Out" onPress={() => signOut(auth)} />
 		</View>
 	);
 }
@@ -37,7 +45,7 @@ const styles = StyleSheet.create({
 		backgroundColor: "#280907",
 	},
 	title: {
-		fontSize: 50,
+		fontSize: 40,
 		fontWeight: 'bold',
 	},
 	subtitle: {

@@ -1,14 +1,46 @@
 import { StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 
-import EditScreenInfo from '../components/EditScreenInfo';
 import Logo from '../components/Logo';
 import Copyright from '../components/Copyright';
 import { Text, View } from '../components/Themed';
 import { RootTabScreenProps } from '../types';
 import { FontAwesome } from '@expo/vector-icons';
-import { FontDisplay } from 'expo-font';
+
+import React from 'react';
+
+import '../config/firebase';
+
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+
+const auth = getAuth();
 
 export default function TabTwoScreen({ navigation }: RootTabScreenProps<'Login'>) {
+	const [value, setValue] = React.useState({
+		email: '',
+		password: '',
+		error: ''
+	})
+
+	async function login() {
+		if (value.email === '' || value.password === '') {
+			setValue({
+				...value,
+				error: 'Email and password are mandatory.'
+			})
+			return;
+		}
+
+		try {
+			await signInWithEmailAndPassword(auth, value.email, value.password);
+			navigation.navigate('Root');
+		} catch (error: any) {
+			setValue({
+				...value,
+				error: error.message,
+			})
+		}
+	}
+
 	return (
 		<View style={styles.container}>
 			<TouchableOpacity
@@ -30,9 +62,11 @@ export default function TabTwoScreen({ navigation }: RootTabScreenProps<'Login'>
 					<Text style={styles.italic}>Usuario:</Text>
 					<TextInput
 						style={styles.input}
-						placeholder='@Usuario'
+						placeholder='Correo Electrónico'
 						placeholderTextColor='gray'
 						selectionColor='white'
+						value={value.email}
+						onChangeText={(text) => setValue({ ...value, email: text })}
 					/>
 				</View>
 				<View style={styles.group}>
@@ -42,13 +76,15 @@ export default function TabTwoScreen({ navigation }: RootTabScreenProps<'Login'>
 						placeholder='Contraseña'
 						placeholderTextColor='gray'
 						secureTextEntry={true}
+						value={value.password}
+						onChangeText={(text) => setValue({ ...value, password: text })}
 					/>
 				</View>
 			</View>
 
 			<TouchableOpacity
 				style={[styles.primaryButton, styles.widest]}
-				onPress={() => navigation.navigate('Root')}
+				onPress={login}
 			>
 				<Text
 					style={[styles.buttonText, styles.italic]}

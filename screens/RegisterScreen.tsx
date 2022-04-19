@@ -5,8 +5,44 @@ import Copyright from '../components/Copyright';
 import { Text, View } from '../components/Themed';
 import { FontAwesome } from '@expo/vector-icons';
 import { RootTabScreenProps } from '../types';
+import React from 'react';
+
+import '../config/firebase';
+
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+
+const auth = getAuth();
 
 export default function TabTwoScreen({ navigation }: RootTabScreenProps<'Register'>) {
+	const [value, setValue] = React.useState({
+		email: '',
+		password: '',
+		error: ''
+	})
+
+	async function register() {
+		if (value.email === '' || value.password === '') {
+			setValue({
+				...value,
+				error: 'email and password are mandatory.'
+			})
+			// return;
+		}
+		try {
+			await createUserWithEmailAndPassword(auth, value.email, value.password);
+			navigation.navigate('Root');
+		} catch (error: any) {
+			setValue({
+				...value,
+				error: error.message,
+			})
+		}
+		// setValue({
+		// 	...value,
+		// 	error: ''
+		// })
+	}
+
 	return (
 		<View style={styles.container}>
 			<ScrollView
@@ -27,23 +63,29 @@ export default function TabTwoScreen({ navigation }: RootTabScreenProps<'Registe
 				<Text style={styles.title}>Registro</Text>
 				<View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
 
+				{!!value.error && <View style={styles.error}><Text>{value.error}</Text></View>}
+
 				<View>
 					<View style={styles.vertical}>
 						<Text style={styles.italic}>Usuario:     </Text>
 						<TextInput
 							style={styles.input}
-							placeholder='@Usuario'
+							placeholder='Correo Electrónico'
 							placeholderTextColor='gray'
 							selectionColor='white'
+							value={value.email}
+							onChangeText={(text) => setValue({ ...value, email: text })}
 						/>
 					</View>
 					<View style={styles.vertical}>
-						<Text style={styles.italic}>Contraseña:</Text>
+						<Text style={styles.italic}>Contraseñ:</Text>
 						<TextInput
 							style={styles.input}
 							placeholder='Contraseña'
 							placeholderTextColor='gray'
 							secureTextEntry={true}
+							value={value.password}
+							onChangeText={(text) => setValue({ ...value, password: text })}
 						/>
 					</View>
 				</View>
@@ -56,6 +98,8 @@ export default function TabTwoScreen({ navigation }: RootTabScreenProps<'Registe
 							placeholder='Nombres'
 							placeholderTextColor='gray'
 							selectionColor='white'
+						// value={value.firstnames}
+						// onChangeText={(text) => setValue({ ...value, firstnames: text })}
 						/>
 					</View>
 					<View>
@@ -65,13 +109,15 @@ export default function TabTwoScreen({ navigation }: RootTabScreenProps<'Registe
 							placeholder='Apellidos'
 							placeholderTextColor='gray'
 							secureTextEntry={true}
+						// value={value.lastnames}
+						// onChangeText={(text) => setValue({ ...value, lastnames: text })}
 						/>
 					</View>
 				</View>
 
 				<TouchableOpacity
 					style={[styles.primaryButton, styles.widest]}
-					onPress={() => navigation.navigate('Root')}
+					onPress={register}
 				>
 					<Text
 						style={[styles.buttonText, styles.italic]}
@@ -139,7 +185,7 @@ const styles = StyleSheet.create({
 	},
 	input: {
 		backgroundColor: '#280907',
-		width: 200,
+		width: 210,
 		color: '#fff',
 		padding: 20,
 		borderRadius: 10,
@@ -155,4 +201,10 @@ const styles = StyleSheet.create({
 		marginTop: 10,
 		marginHorizontal: 5,
 	},
+	error: {
+		marginTop: 10,
+		padding: 10,
+		color: '#fff',
+		backgroundColor: '#D54826FF',
+	}
 });

@@ -25,6 +25,8 @@ import ProfileScreen from '../screens/ProfileScreen';
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 
+import { useAuthentication } from '../hooks/useAuthentication';
+
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
 	return (
 		<NavigationContainer
@@ -42,10 +44,24 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
-	return (
+	const { user } = useAuthentication();
+
+	return user ? (
+		<Stack.Navigator>
+			<Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
+			<Stack.Screen name="NotFound" component={NotFoundScreen} options={{
+				title: 'Oops!',
+				headerStyle: {
+					backgroundColor: '#4B5842',
+				},
+			}} />
+			<Stack.Group screenOptions={{ presentation: 'modal' }}>
+				<Stack.Screen name="Modal" component={ModalScreen} />
+			</Stack.Group>
+		</Stack.Navigator>
+	) : (
 		<Stack.Navigator
 			initialRouteName="Signin">
-			<Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
 			<Stack.Screen name="NotFound" component={NotFoundScreen} options={{
 				title: 'Oops!',
 				headerStyle: {
